@@ -59,8 +59,14 @@ const renderMarkdown = (text: string) => {
 
 // 下载Excel（CSV）
 const downloadExcel = (result: any) => {
-  const headers = ['简单版总结', '详细版总结', '趣味故事', '新闻联播', '商业点子'];
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  const dateTimeStr = dateStr + ' ' + timeStr;
+
+  const headers = ['日期', '简单版总结', '详细版总结', '趣味故事', '新闻联播', '商业点子'];
   const values = [
+    dateTimeStr,
     result.simple || '',
     result.complicate || '',
     result.story || '',
