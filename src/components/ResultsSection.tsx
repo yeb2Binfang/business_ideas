@@ -31,29 +31,44 @@ const CopyButton = ({ text }: { text: string }) => {
   );
 };
 
-// Markdown 渲染器 - 只处理加粗和标题，不处理列表
+// Markdown 渲染器 - 处理标题、加粗等
 const renderMarkdown = (text: string) => {
   if (!text) return '';
-  
+
   let html = text;
-  
+
   // 转义 HTML 特殊字符
   html = html.replace(/&/g, '&amp;')
              .replace(/</g, '&lt;')
              .replace(/>/g, '&gt;');
-  
-  // 处理加粗 **text**
+
+  // 处理加粗 **text** 和 __text__
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
-  
-  // 处理标题 - 隐藏 #/## 符号，只显示样式
-  html = html.replace(/^### (.+)$/gm, '<h3 class="text-lg font-semibold text-slate-200 mt-4 mb-2">$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2 class="text-xl font-semibold text-slate-200 mt-4 mb-2">$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-slate-100 mt-4 mb-2">$1</h1>');
-  
-  // 换行处理 - 保留原始格式
+
+  // 处理标题 - 先处理长前缀，避免被短前缀覆盖
+  // 6级标题 ######
+  html = html.replace(/^###### (.+)$/gm, '<h6 class="text-sm font-semibold text-slate-300 mt-3 mb-1">$1</h6>');
+  // 5级标题 #####
+  html = html.replace(/^##### (.+)$/gm, '<h5 class="text-base font-semibold text-slate-300 mt-3 mb-1">$1</h5>');
+  // 4级标题 ####
+  html = html.replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-slate-200 mt-4 mb-2">$1</h4>');
+  // 3级标题 ###
+  html = html.replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-slate-200 mt-4 mb-2">$1</h3>');
+  // 2级标题 ##
+  html = html.replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-slate-100 mt-4 mb-2">$1</h2>');
+  // 1级标题 #
+  html = html.replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-slate-100 mt-5 mb-2">$1</h1>');
+
+  // 处理无序列表 - 行首以 - / * / + 开始的
+  html = html.replace(/^[-*+] (.+)$/gm, '<li class="ml-4 text-slate-300">$1</li>');
+
+  // 处理有序列表 - 行首数字. 格式
+  html = html.replace(/^\d+\. (.+)$/gm, '<li class="ml-4 text-slate-300 list-decimal">$1</li>');
+
+  // 换行处理 - 保留空行
   html = html.replace(/\n/g, '<br>');
-  
+
   return html;
 };
 
